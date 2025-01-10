@@ -5,17 +5,14 @@ on:
     branches:
       - '*'
 
-env:
-  JAVA_VERSION: '17'
-
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
     with:
-      java-version: ${{ env.JAVA_VERSION }}
+      java-version: '17'
 
   build:
     needs: lint
     uses: ./.github/workflows/build.yml
     with:
-      java-version: ${{ env.JAVA_VERSION }}
+      java-version: '17'
