@@ -1,12 +1,13 @@
 name: Lint
 
 on:
-  workflow_call:  # Делаем workflow вызываемым
-    inputs:       # Опционально можно определить входные параметры
+  workflow_call:
+    inputs:
       java-version:
         description: 'Java version to use'
         required: false
-        default: '17'
+        default: 17
+        type: number
 
 jobs:
   lint:
