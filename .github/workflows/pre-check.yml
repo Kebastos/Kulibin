@@ -1,0 +1,21 @@
+name: Lint and Build
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  JAVA_VERSION: '17'
+
+jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+    with:
+      java-version: ${{ env.JAVA_VERSION }}
+
+  build:
+    needs: lint
+    uses: ./.github/workflows/build.yml
+    with:
+      java-version: ${{ env.JAVA_VERSION }}

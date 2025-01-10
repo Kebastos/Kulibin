@@ -1,14 +1,16 @@
 name: Lint
 
 on:
-  push:
-    branches:
-      - '*'
+  workflow_call:  # Делаем workflow вызываемым
+    inputs:       # Опционально можно определить входные параметры
+      java-version:
+        description: 'Java version to use'
+        required: false
+        default: '17'
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -16,12 +18,10 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: ${{ inputs.java-version }}
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - name: Setup
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Build with Gradle
-        run: ./gradlew
-      - name: Ktlint
+      - name: Run ktlint
         run: ./gradlew ktlintCheck
