@@ -1,0 +1,74 @@
+<idea-plugin>
+  <id>com.kebastos.kulibin</id>
+
+  <name>Kulibin</name>
+  <vendor>Kebastos Inc.</vendor>
+
+  <description><![CDATA[
+    <p>
+    <strong>Kulibin</strong> is a simple automation tool for everyday tasks such as building and running projects,
+    where these actions are based on executing build/run scripts.
+</p>
+<p>This plugin offers the following features:</p>
+<ul>
+    <li>Automatic scanning and usage of scripts based on a specified pattern.</li>
+    <li>Two execution modes: <strong>build</strong> and <strong>start</strong>.</li>
+    <li>Management of scripts to be executed.</li>
+    <li>Integrated console output directly within the IDE.</li>
+</ul>
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <projectConfigurable
+            instance="com.kebastos.kulibin.settings.ApplicationSettingsConfigurable"
+            displayName="Kulibin"
+            id="KulibinSettings"
+            groupId="tools"/>
+    <postStartupActivity implementation="com.kebastos.kulibin.services.projectSettings.ProjectSettingsLoaderService"
+                         id="com.kebastos.kulibin.services.projectSettings.ProjectSettingsLoaderService"/>
+    <toolWindow factoryClass="com.kebastos.kulibin.toolWindows.KulibinToolWindowFactory"
+                id="KulibinTerminal"
+                icon="AllIcons.Actions.GroupByTestProduction"
+                anchor="bottom" />
+  </extensions>
+
+  <actions>
+    <group id="com.kebastos.kulibin.KulibinToolBar" text="Kulibin" description="Kulibin tools toolbar">
+      <add-to-group group-id="MainToolbarCenter"/>
+
+      <action id="com.kebastos.kulibin.actions.ShowProjectSettingsAction"
+              class="com.kebastos.kulibin.actions.ShowProjectSettingsAction"
+              text="Show Settings"
+              icon="AllIcons.Actions.Compile">
+      </action>
+
+      <separator />
+
+      <action id="com.kebastos.kulibin.actions.RunBuildAction"
+              class="com.kebastos.kulibin.actions.RunBuildAction"
+              text="Build"
+              icon="AllIcons.Actions.SynchronizeScrolling">
+      </action>
+      <action id="com.kebastos.kulibin.actions.RunStartAction"
+              class="com.kebastos.kulibin.actions.RunStartAction"
+              text="Start"
+              icon="AllIcons.Actions.RunAll">
+      </action>
+
+      <separator />
+
+      <action id="com.kebastos.kulibin.actions.build.StopAction"
+              class="com.kebastos.kulibin.actions.StopAction"
+              text="Stop"
+              icon="AllIcons.Actions.Suspend">
+      </action>
+
+    </group>
+
+
+
+
+  </actions>
+</idea-plugin>
