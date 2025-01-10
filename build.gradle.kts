@@ -14,7 +14,7 @@ detekt {
 }
 
 group = "com.kebastos.kulibin"
-version = "251.0.1-rc1"
+version = "251.0.1-rc2"
 
 repositories {
     mavenCentral()
@@ -50,7 +50,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("232")
+        sinceBuild.set("223")
         untilBuild.set("243.*")
     }
 
