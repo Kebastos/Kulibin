@@ -31,7 +31,7 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Build with Gradle
-        run: ./gradlew build -Pversion=$TAG_NAME
+        run: ./gradlew buildPlugin -Pversion=$TAG_NAME
 
       - name: Rename JAR file
         run: |
