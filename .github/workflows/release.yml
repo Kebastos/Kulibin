@@ -31,21 +31,22 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Build with Gradle
-        run: ./gradlew composedJar -Pversion=$TAG_NAME -PoutputDir=./build/
+        run: ./gradlew buildPlugin -Pversion=$TAG_NAME -PoutputDir=./build/
 
-      - name: Rename JAR file
+      - name: Check folders
         run: |
-            JAR_PATH=./build/libs/Kulibin.jar
-            NEW_JAR_PATH=./build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
-            mv $JAR_PATH $NEW_JAR_PATH
-            echo "JAR file renamed to $NEW_JAR_PATH"
+          ls
+          cd build
+          ls
+          cd distributions
+          
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
           name: kulibin-jar
           if-no-files-found: error
-          path: ./build/Kulibin-${{ env.TAG_NAME }}.jar
+          path: ./build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
 
   release:
     runs-on: ubuntu-latest
