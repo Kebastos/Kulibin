@@ -36,10 +36,12 @@ jobs:
       - name: Check folders
         run: |
           ls
+          echo "cd build"
           cd build
           ls
+          echo "cd distributions"
           cd distributions
-          
+          ls
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
