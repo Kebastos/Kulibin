@@ -4,17 +4,10 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.0.20"
     id("org.jetbrains.intellij.platform") version "2.1.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
-}
-
-detekt {
-    toolVersion = "1.23.7"
-    config.setFrom("$projectDir/config/detekt.yml")
-    buildUponDefaultConfig = true
 }
 
 group = "com.kebastos.kulibin"
-version = "251.0.1-rc2"
+version = project.findProperty("version")?.toString() ?: "0.0.0"
 
 repositories {
     mavenCentral()
