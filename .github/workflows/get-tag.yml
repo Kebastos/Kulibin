@@ -1,0 +1,25 @@
+name: Get Tag
+
+on:
+  workflow_call:
+    outputs:
+      tag-name:
+        description: 'The tag name'
+        value: ${{ jobs.get-tag.outputs.tag-name }}
+
+jobs:
+  get-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag-name: ${{ steps.extract-tag.outputs.tag-name }}
+    steps:
+      - name: Extract tag name
+        id: extract-tag
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+          else
+            LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+            TAG_NAME="${LAST_TAG}-rc${{ github.run_id }}"
+          fi
+          echo "tag-name=$TAG_NAME" >> $GITHUB_OUTPUT
