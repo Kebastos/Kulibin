@@ -31,7 +31,7 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Build with Gradle
-        run: ./gradlew buildPlugin -Pversion=$TAG_NAME -PoutputDir=./build/
+        run: ./gradlew buildPlugin -Pversion=$TAG_NAME
 
       - name: Check folders
         run: |
