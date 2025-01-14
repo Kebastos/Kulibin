@@ -22,7 +22,7 @@ jobs:
       - name: Extract tag name
         id: extract-tag
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          LAST_TAG=$(git tag -l 'v*' | grep -v -- '-rc' | sort -V | tail -n 1 || echo "v0.0.0")
           echo "last-tag=${LAST_TAG}" >> $GITHUB_OUTPUT
 
       - name: Increment version for stable release (main branch)
