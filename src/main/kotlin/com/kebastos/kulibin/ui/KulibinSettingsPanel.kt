@@ -15,13 +15,15 @@ class KulibinSettingsPanel(settings: ApplicationSettingsState) {
     private val buildSearchMaskField = JBTextField(state.buildSearchMask)
     private val startSearchMaskField = JBTextField(state.startSearchMask)
 
-    private val terminalTypeComboBox = ComboBox(getAvailableTerminals()).apply {
-        selectedItem = state.terminalType
-    }
+    private val terminalTypeComboBox =
+        ComboBox(getAvailableTerminals()).apply {
+            selectedItem = state.terminalType
+        }
 
-    private val consoleViewLevel = ComboBox(ConsoleViewLevel.entries.toTypedArray()).apply {
-        selectedItem = state.consoleViewLevel
-    }
+    private val consoleViewLevel =
+        ComboBox(ConsoleViewLevel.entries.toTypedArray()).apply {
+            selectedItem = state.consoleViewLevel
+        }
 
     val panel: DialogPanel =
         panel {
@@ -67,8 +69,8 @@ class KulibinSettingsPanel(settings: ApplicationSettingsState) {
 
     fun isModified(): Boolean {
         return buildSearchMaskField.text != state.buildSearchMask ||
-                startSearchMaskField.text != state.startSearchMask ||
-                terminalTypeComboBox.selectedItem != state.terminalType ||
-                consoleViewLevel.selectedItem!= state.consoleViewLevel
+            startSearchMaskField.text != state.startSearchMask ||
+            terminalTypeComboBox.selectedItem != state.terminalType ||
+            consoleViewLevel.selectedItem != state.consoleViewLevel
     }
 }

@@ -8,5 +8,5 @@ data class ApplicationSettingsModel(
     var buildSearchMask: String = "*rebuild*.bat",
     var startSearchMask: String = "*start*.bat",
     var terminalType: Terminal = getDefaultTerminal(),
-    var consoleViewLevel: ConsoleViewLevel = ConsoleViewLevel.DEBUG
+    var consoleViewLevel: ConsoleViewLevel = ConsoleViewLevel.DEBUG,
 )

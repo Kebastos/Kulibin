@@ -2,7 +2,11 @@ package com.kebastos.kulibin.services.process
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.impl.ConsoleViewImpl
-import com.intellij.execution.process.*
+import com.intellij.execution.process.OSProcessHandler
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -16,10 +20,12 @@ import java.io.File
 import java.nio.charset.Charset
 import kotlin.concurrent.thread
 
-class ProcessService(private val project: Project,
-                     private val scriptInfo: ScriptInfoModel,
-                     private val terminal: Terminal,
-                     private val consoleViewLevel: ConsoleViewLevel) {
+class ProcessService(
+    private val project: Project,
+    private val scriptInfo: ScriptInfoModel,
+    private val terminal: Terminal,
+    private val consoleViewLevel: ConsoleViewLevel,
+) {
     private val toolWindowManager = ToolWindowManager.getInstance(project)
     private val toolWindow: ToolWindow? = toolWindowManager.getToolWindow(KULIBIN_TOOL_WINDOW_NAME)
 
@@ -70,12 +76,13 @@ class ProcessService(private val project: Project,
                                     event: ProcessEvent,
                                     outputType: Key<*>,
                                 ) {
-                                    val contentType = when (outputType) {
-                                        ProcessOutputTypes.STDOUT -> ConsoleViewContentType.NORMAL_OUTPUT
-                                        ProcessOutputTypes.STDERR -> ConsoleViewContentType.ERROR_OUTPUT
-                                        ProcessOutputTypes.SYSTEM -> ConsoleViewContentType.SYSTEM_OUTPUT
-                                        else -> ConsoleViewContentType.NORMAL_OUTPUT
-                                    }
+                                    val contentType =
+                                        when (outputType) {
+                                            ProcessOutputTypes.STDOUT -> ConsoleViewContentType.NORMAL_OUTPUT
+                                            ProcessOutputTypes.STDERR -> ConsoleViewContentType.ERROR_OUTPUT
+                                            ProcessOutputTypes.SYSTEM -> ConsoleViewContentType.SYSTEM_OUTPUT
+                                            else -> ConsoleViewContentType.NORMAL_OUTPUT
+                                        }
 
                                     val outputText = String(event.text.toByteArray(), Charset.forName("UTF-8"))
 
@@ -117,13 +124,18 @@ class ProcessService(private val project: Project,
         return processHandler?.isProcessTerminated == false
     }
 
-    private fun shouldLogMessage(message: String, level: ConsoleViewLevel): Boolean {
+    private fun shouldLogMessage(
+        message: String,
+        level: ConsoleViewLevel,
+    ): Boolean {
         // Если уровень сообщения выше или равен заданному уровню логирования, выводим сообщение
         return when (level) {
             ConsoleViewLevel.ERROR -> message.contains("ERROR", ignoreCase = true)
-            ConsoleViewLevel.WARNING -> message.contains("ERROR", ignoreCase = true) ||
+            ConsoleViewLevel.WARNING ->
+                message.contains("ERROR", ignoreCase = true) ||
                     message.contains("WARNING", ignoreCase = true)
-            ConsoleViewLevel.INFO -> message.contains("ERROR", ignoreCase = true) ||
+            ConsoleViewLevel.INFO ->
+                message.contains("ERROR", ignoreCase = true) ||
                     message.contains("WARNING", ignoreCase = true) ||
                     message.contains("INFO", ignoreCase = true)
             ConsoleViewLevel.DEBUG -> true

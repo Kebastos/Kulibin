@@ -21,10 +21,11 @@ abstract class RunProcessAction(private val scriptType: ScriptType) : AnAction()
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project
         val state = project?.service<ProjectSettingsState>()?.state
-        val scriptInfo = when (scriptType) {
-            ScriptType.RUN -> state?.runScript
-            ScriptType.BUILD -> state?.buildScript
-        }
+        val scriptInfo =
+            when (scriptType) {
+                ScriptType.RUN -> state?.runScript
+                ScriptType.BUILD -> state?.buildScript
+            }
 
         if (project != null && scriptInfo != null) {
             val processService = ProcessService(project, scriptInfo, settingsState.terminalType, settingsState.consoleViewLevel)
@@ -43,6 +44,7 @@ abstract class RunProcessAction(private val scriptType: ScriptType) : AnAction()
     }
 
     enum class ScriptType {
-        RUN, BUILD
+        RUN,
+        BUILD,
     }
 }

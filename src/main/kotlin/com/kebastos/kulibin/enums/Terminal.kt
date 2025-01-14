@@ -3,12 +3,13 @@ package com.kebastos.kulibin.enums
 import com.intellij.execution.configurations.GeneralCommandLine
 import java.io.File
 import java.nio.charset.Charset
-import java.util.*
+import java.util.Locale
 
 enum class Terminal(val command: String, val options: String) {
     CMD("cmd.exe", "/c"),
     POWERSHELL("powershell.exe", "-Command"),
-    SH("sh", "-c");
+    SH("sh", "-c"),
+    ;
 
     fun getCommandLine(scriptFile: File): GeneralCommandLine {
         return GeneralCommandLine(command, options, scriptFile.path).apply {

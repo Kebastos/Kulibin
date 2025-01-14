@@ -7,5 +7,5 @@ enum class ConsoleViewLevel(val contentType: ConsoleViewContentType) {
     ERROR(ConsoleViewContentType.ERROR_OUTPUT),
     WARNING(ConsoleViewContentType.SYSTEM_OUTPUT),
     SYSTEM(ConsoleViewContentType.SYSTEM_OUTPUT),
-    DEBUG(ConsoleViewContentType.SYSTEM_OUTPUT)
+    DEBUG(ConsoleViewContentType.SYSTEM_OUTPUT),
 }
