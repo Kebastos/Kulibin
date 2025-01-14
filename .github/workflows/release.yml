@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kulibin-jar
-          path: ./build/distributions/Kulibin-$TAG_NAME.jar
+          path: ./build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
 
   release:
     runs-on: ubuntu-latest
