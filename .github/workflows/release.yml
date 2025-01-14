@@ -33,15 +33,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew buildPlugin -Pversion=$TAG_NAME
 
-      - name: Rename JAR file
-        run: |
-          cd /home/runner/work/Kulibin/Kulibin/build/distributions
-          ls -a
-          JAR_PATH=./build/distributions/Kulibin.jar
-          NEW_JAR_PATH=./build/distributions/Kulibin-$TAG_NAME.jar
-          mv $JAR_PATH $NEW_JAR_PATH
-          echo "JAR file renamed to $NEW_JAR_PATH"
-
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -50,7 +41,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: build  # Зависит от задания build
+    needs: build
     steps:
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
