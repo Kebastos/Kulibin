@@ -57,7 +57,7 @@ jobs:
         with:
           name: kulibin-jar
           if-no-files-found: error
-          path: ./build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
+          path: /home/runner/work/Kulibin/Kulibin/build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
 
   release:
     runs-on: ubuntu-latest
