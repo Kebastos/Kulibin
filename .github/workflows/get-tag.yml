@@ -13,6 +13,9 @@ jobs:
     outputs:
       tag-name: ${{ steps.extract-tag.outputs.tag-name }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Extract tag name
         id: extract-tag
         run: |
