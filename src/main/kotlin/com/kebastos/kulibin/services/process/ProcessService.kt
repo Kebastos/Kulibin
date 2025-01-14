@@ -128,7 +128,6 @@ class ProcessService(
         message: String,
         level: ConsoleViewLevel,
     ): Boolean {
-        // Если уровень сообщения выше или равен заданному уровню логирования, выводим сообщение
         return when (level) {
             ConsoleViewLevel.ERROR -> message.contains("ERROR", ignoreCase = true)
             ConsoleViewLevel.WARNING ->
