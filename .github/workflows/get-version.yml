@@ -5,13 +5,13 @@ on:
     outputs:
       version:
         description: 'Current version'
-        value: ${{ jobs.get-version.outputs.version }}
+        value: ${{ jobs.get-tag.outputs.version }}
 
 jobs:
   get-tag:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.extract-tag.outputs.version }}
+      version: ${{ steps.increment-version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,13 +22,15 @@ jobs:
         id: extract-tag
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo $LAST_TAG
+          echo "last-tag=${LAST_TAG}" >> $GITHUB_OUTPUT
 
-      - name: Increment version for stable release (master branch)
+      - name: Increment version for stable release (main branch)
         id: increment-version
         run: |
-          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
-            LAST_TAG="${LAST_TAG}-rc${{ github.run_id }}"
+          LAST_TAG="${{ steps.extract-tag.outputs.last-tag }}"
+
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            LAST_TAG="${LAST_TAG}-rc${GITHUB_RUN_ID}"
           else
             if [[ "$LAST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
               MAJOR=${BASH_REMATCH[1]}
@@ -38,8 +40,9 @@ jobs:
               LAST_TAG="v${MAJOR}.${MINOR}.${PATCH}"
             fi
           fi
-          echo "version=$LAST_TAG" >> $GITHUB_OUTPUT
+
+          echo "version=${LAST_TAG}" >> $GITHUB_OUTPUT
 
       - name: Print final tag name
         run: |
-          echo "Final tag name: ${{ steps.increment-stable-tag.outputs.version }}"
+          echo "Final tag name: ${{ steps.increment-version.outputs.version }}"
