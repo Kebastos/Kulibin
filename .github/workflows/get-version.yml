@@ -15,11 +15,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Extract tag name
         id: extract-tag
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          LAST_TAG=$(git tag -l 'v*' | grep -v '-rc' | sort -V | tail -n 1)
 
       - name: Increment version for stable release (master branch)
         id: increment-version
