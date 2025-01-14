@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: 'main'
-          fetch-tags: 50
+          fetch-tags: true
 
       - name: Extract tag name
         id: extract-tag
