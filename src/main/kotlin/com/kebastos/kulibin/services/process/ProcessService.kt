@@ -1,23 +1,31 @@
 package com.kebastos.kulibin.services.process
 
 import com.intellij.execution.ExecutionException
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
+import com.kebastos.kulibin.enums.ConsoleViewLevel
+import com.kebastos.kulibin.enums.Terminal
 import com.kebastos.kulibin.models.ScriptInfoModel
 import com.kebastos.kulibin.toolWindows.KULIBIN_TOOL_WINDOW_NAME
 import java.io.File
+import java.nio.charset.Charset
 import kotlin.concurrent.thread
 
-class ProcessService(private val project: Project, private val scriptInfo: ScriptInfoModel) {
+class ProcessService(
+    private val project: Project,
+    private val scriptInfo: ScriptInfoModel,
+    private val terminal: Terminal,
+    private val consoleViewLevel: ConsoleViewLevel,
+) {
     private val toolWindowManager = ToolWindowManager.getInstance(project)
     private val toolWindow: ToolWindow? = toolWindowManager.getToolWindow(KULIBIN_TOOL_WINDOW_NAME)
 
@@ -32,7 +40,7 @@ class ProcessService(private val project: Project, private val scriptInfo: Scrip
         toolWindow?.contentManager?.contents?.firstOrNull()?.component as? ConsoleViewImpl
             ?: throw IllegalStateException("ConsoleView not found in the ToolWindow")
 
-    private var processHandler: ProcessHandler? = null // Ссылка на процесс
+    private var processHandler: ProcessHandler? = null
 
     fun execProcess() {
         if (!scriptFile.exists() || !scriptFile.isFile) {
@@ -40,10 +48,7 @@ class ProcessService(private val project: Project, private val scriptInfo: Scrip
             return
         }
 
-        val commandLine =
-            GeneralCommandLine("cmd.exe", "/c", scriptFile.name, scriptFile.path).apply {
-                setWorkDirectory(scriptFile.parentFile)
-            }
+        val commandLine = terminal.getCommandLine(scriptFile)
 
         thread(start = true) {
             try {
@@ -71,7 +76,19 @@ class ProcessService(private val project: Project, private val scriptInfo: Scrip
                                     event: ProcessEvent,
                                     outputType: Key<*>,
                                 ) {
-                                    consoleView.print(event.text, ConsoleViewContentType.NORMAL_OUTPUT)
+                                    val contentType =
+                                        when (outputType) {
+                                            ProcessOutputTypes.STDOUT -> ConsoleViewContentType.NORMAL_OUTPUT
+                                            ProcessOutputTypes.STDERR -> ConsoleViewContentType.ERROR_OUTPUT
+                                            ProcessOutputTypes.SYSTEM -> ConsoleViewContentType.SYSTEM_OUTPUT
+                                            else -> ConsoleViewContentType.NORMAL_OUTPUT
+                                        }
+
+                                    val outputText = String(event.text.toByteArray(), Charset.forName("UTF-8"))
+
+                                    if (shouldLogMessage(outputText, consoleViewLevel)) {
+                                        consoleView.print(outputText, contentType)
+                                    }
 
                                     if (event.text.contains(" . . .", ignoreCase = true)) {
                                         pressKey()
@@ -105,6 +122,25 @@ class ProcessService(private val project: Project, private val scriptInfo: Scrip
 
     fun isRunning(): Boolean {
         return processHandler?.isProcessTerminated == false
+    }
+
+    private fun shouldLogMessage(
+        message: String,
+        level: ConsoleViewLevel,
+    ): Boolean {
+        // Если уровень сообщения выше или равен заданному уровню логирования, выводим сообщение
+        return when (level) {
+            ConsoleViewLevel.ERROR -> message.contains("ERROR", ignoreCase = true)
+            ConsoleViewLevel.WARNING ->
+                message.contains("ERROR", ignoreCase = true) ||
+                    message.contains("WARNING", ignoreCase = true)
+            ConsoleViewLevel.INFO ->
+                message.contains("ERROR", ignoreCase = true) ||
+                    message.contains("WARNING", ignoreCase = true) ||
+                    message.contains("INFO", ignoreCase = true)
+            ConsoleViewLevel.DEBUG -> true
+            else -> true
+        }
     }
 
     private fun pressKey() {
