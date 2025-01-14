@@ -7,8 +7,8 @@ on:
         description: 'Java version to use'
         required: true
         type: string
-      tag-name:
-        description: 'The tag name'
+      product-version:
+        description: 'The product version'
         required: true
         type: string
 
@@ -32,11 +32,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        run: ./gradlew buildPlugin -Pversion=${{ inputs.tag-name }}
+        run: ./gradlew buildPlugin -Pversion=${{ inputs.product-version }}
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
           name: kulibin-jar
           if-no-files-found: error
-          path: /home/runner/work/Kulibin/Kulibin/build/distributions/Kulibin-${{ inputs.tag-name }}.zip
+          path: /home/runner/work/Kulibin/Kulibin/build/distributions/Kulibin-${{ inputs.product-version }}.zip

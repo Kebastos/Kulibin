@@ -8,8 +8,10 @@ on:
       - '*'
 
 jobs:
-  get-tag:
-    uses: ./.github/workflows/get-tag.yml
+  get-version:
+    uses: ./.github/workflows/get-version.yml
+    with:
+      is-prerelease: ${{ github.ref != 'refs/heads/main' }}
 
   lint:
     uses: ./.github/workflows/lint.yml
@@ -18,15 +20,15 @@ jobs:
 
   build:
     uses: ./.github/workflows/build.yml
-    needs: [get-tag, lint]
+    needs: [get-version, lint]
     with:
       java-version: 17
-      tag-name: ${{ needs.get-tag.outputs.tag-name }}
+      product-version: ${{ needs.get-version.outputs.version }}
 
   release:
     uses: ./.github/workflows/release.yml
-    needs: [get-tag, build]
+    needs: [get-version, build]
     with:
       java-version: 17
-      tag-name: ${{ needs.get-tag.outputs.tag-name }}
+      product-version: ${{ needs.get-version.outputs.version }}
       is-prerelease: ${{ github.ref != 'refs/heads/main' }}

@@ -1,0 +1,41 @@
+name: Get Tag
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: 'Current version'
+        value: ${{ jobs.get-version.outputs.version }}
+
+jobs:
+  get-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract-tag.outputs.version }}
+    steps:
+      - name: Extract tag name
+        id: extract-tag
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+
+      - name: Increment version for stable release (master branch)
+        id: increment-version
+        run: |
+          if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
+            # Если не мастер, добавляем -rc и run_id
+            LAST_TAG="${LAST_TAG}-rc${{ github.run_id }}"
+          else
+            # Если мастер, увеличиваем патч-версию
+            if [[ "$LAST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              MAJOR=${BASH_REMATCH[1]}
+              MINOR=${BASH_REMATCH[2]}
+              PATCH=$((BASH_REMATCH[3] + 1))
+
+              LAST_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+            fi
+          fi
+          echo "version=$LAST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Print final tag name
+        run: |
+          echo "Final tag name: ${{ steps.increment-stable-tag.outputs.version }}"
