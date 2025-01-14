@@ -1,4 +1,4 @@
-name: Lint
+name: Build
 
 on:
   workflow_call:
@@ -7,9 +7,13 @@ on:
         description: 'Java version to use'
         required: true
         type: string
+      tag-name:
+        description: 'The tag name'
+        required: true
+        type: string
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,5 +31,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run ktlint
-        run: ./gradlew ktlintCheck
+      - name: Build with Gradle
+        run: ./gradlew buildPlugin -Pversion=${{ inputs.tag-name }}
+
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kulibin-jar
+          if-no-files-found: error
+          path: /home/runner/work/Kulibin/Kulibin/build/distributions/Kulibin-${{ inputs.tag-name }}.zip

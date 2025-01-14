@@ -1,0 +1,32 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+
+jobs:
+  get-tag:
+    uses: ./.github/workflows/get-tag.yml
+
+  lint:
+    uses: ./.github/workflows/lint.yml
+    with:
+      java-version: 17
+
+  build:
+    uses: ./.github/workflows/build.yml
+    needs: [get-tag, lint]
+    with:
+      java-version: 17
+      tag-name: ${{ needs.get-tag.outputs.tag-name }}
+
+  release:
+    uses: ./.github/workflows/release.yml
+    needs: [get-tag, build]
+    with:
+      java-version: 17
+      tag-name: ${{ needs.get-tag.outputs.tag-name }}
+      is-prerelease: ${{ github.ref != 'refs/heads/main' }}
