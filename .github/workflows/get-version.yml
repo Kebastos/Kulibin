@@ -13,6 +13,9 @@ jobs:
     outputs:
       version: ${{ steps.extract-tag.outputs.version }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Extract tag name
         id: extract-tag
         run: |
@@ -22,10 +25,8 @@ jobs:
         id: increment-version
         run: |
           if [[ "${GITHUB_REF}" != "refs/heads/master" ]]; then
-            # Если не мастер, добавляем -rc и run_id
             LAST_TAG="${LAST_TAG}-rc${{ github.run_id }}"
           else
-            # Если мастер, увеличиваем патч-версию
             if [[ "$LAST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
               MAJOR=${BASH_REMATCH[1]}
               MINOR=${BASH_REMATCH[2]}
