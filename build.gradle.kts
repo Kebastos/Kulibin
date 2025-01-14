@@ -20,7 +20,8 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        local("C:\\Program Files\\JetBrains\\JetBrains Rider 2024.2.5")
+        //local("C:\\Program Files\\JetBrains\\JetBrains Rider 2024.2.5")
+        rider("2024.2.5")
         instrumentationTools()
     }
 }
