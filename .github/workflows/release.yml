@@ -35,13 +35,22 @@ jobs:
 
       - name: Check folders
         run: |
+          echo "Current directory:"
           ls
-          echo "cd build"
-          cd build
-          ls
-          echo "cd distributions"
-          cd distributions
-          ls
+          echo "Checking build directory..."
+          if [ -d "build" ]; then
+            cd build
+            ls
+            echo "Checking distributions directory..."
+            if [ -d "distributions" ]; then
+              cd distributions
+              ls
+            else
+              echo "Directory 'distributions' does not exist."
+            fi
+          else
+            echo "Directory 'build' does not exist."
+          fi
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
