@@ -26,12 +26,34 @@ jobs:
           name: kulibin-jar
           path: ./build/distributions
 
+      - name: Increment tag version (only for stable releases)
+        id: increment-tag
+        run: |
+          if [[ "${{ inputs.is-prerelease }}" == "false" ]]; then
+            if [[ "${{ inputs.tag-name }}" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.*)?$ ]]; then
+              MAJOR=${BASH_REMATCH[1]}
+              MINOR=${BASH_REMATCH[2]}
+              PATCH=${BASH_REMATCH[3]}
+              SUFFIX=${BASH_REMATCH[4]}
+
+              NEW_PATCH=$((PATCH + 1))
+
+              NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}${SUFFIX}"
+            else
+              NEW_TAG="${{ inputs.tag-name }}"
+            fi
+          else
+            NEW_TAG="${{ inputs.tag-name }}"
+          fi
+
+          echo "new-tag=${NEW_TAG}" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ inputs.tag-name }}
-          release_name: Release ${{ inputs.tag-name }}
+          tag_name: ${{ steps.increment-tag.outputs.new-tag }}
+          release_name: Release ${{ steps.increment-tag.outputs.new-tag }}
           draft: false
           prerelease: ${{ inputs.is-prerelease }}
         env:
@@ -42,7 +64,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/distributions/Kulibin-${{ inputs.tag-name }}.zip
-          asset_name: Kulibin-${{ inputs.tag-name }}.zip
+          asset_name: Kulibin-${{ steps.increment-tag.outputs.new-tag }}.zip
           asset_content_type: application/java-archive
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
