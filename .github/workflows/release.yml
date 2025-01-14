@@ -35,6 +35,7 @@ jobs:
 
       - name: Rename JAR file
         run: |
+          cd ./build/distributions
           ls -a
           JAR_PATH=./build/distributions/Kulibin.jar
           NEW_JAR_PATH=./build/distributions/Kulibin-$TAG_NAME.jar
