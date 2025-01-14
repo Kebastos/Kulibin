@@ -15,4 +15,8 @@ data class ScriptInfoModel(var name: String = KULIBIN_DEFAULT_SCRIPT_NAME, var p
 
         return !isDefaultScript() && file.exists()
     }
+
+    override fun toString(): String {
+        return "$name | $path"
+    }
 }
