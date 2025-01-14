@@ -10,8 +10,6 @@ on:
 jobs:
   get-version:
     uses: ./.github/workflows/get-version.yml
-    with:
-      is-prerelease: ${{ github.ref != 'refs/heads/main' }}
 
   lint:
     uses: ./.github/workflows/lint.yml
