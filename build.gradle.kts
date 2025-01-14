@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.kebastos.kulibin"
-version = "251.0.1-rc2"
+version = project.findProperty("version")?.toString() ?: "0.0.0"
 
 repositories {
     mavenCentral()

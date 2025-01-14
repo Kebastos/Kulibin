@@ -1,15 +1,9 @@
 name: Release
 
 on:
-  workflow_call:  # Позволяет вызывать этот workflow из других workflows
-    inputs:
-      java-version:
-        type: string
-        required: true
-        description: 'Java version to use'
-    secrets:
-      GITHUB_TOKEN:
-        required: true
+  push:
+    tags:
+      - '*'
 
 jobs:
   release:
@@ -22,7 +16,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ inputs.java-version }}
+          java-version: 17
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -30,16 +24,22 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
-      - name: Rename JAR file
+      - name: Extract tag name
+        id: extract_tag
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          JAR_PATH=./build/distributions/Kulibin.jar
-          NEW_JAR_PATH=./build/distributions/Kulibin-${TAG_NAME}.jar
-          mv $JAR_PATH $NEW_JAR_PATH
-          echo "JAR file renamed to $NEW_JAR_PATH"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
+      - name: Build with Gradle
+        run: ./gradlew build -Pversion=$TAG_NAME
+
+      #- name: Rename JAR file
+      #  run: |
+      #    ls
+      #    JAR_PATH=./build/distributions/Kulibin.jar
+      #    NEW_JAR_PATH=./build/distributions/Kulibin-$TAG_NAME.jar
+      #    mv $JAR_PATH $NEW_JAR_PATH
+      #    echo "JAR file renamed to $NEW_JAR_PATH"
 
       - name: Create GitHub Release
         id: create_release
@@ -55,6 +55,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/distributions/Kulibin-${{ github.ref }}.jar
-          asset_name: Kulibin-${{ github.ref }}.jar
+          asset_path: ./build/distributions/Kulibin-$TAG_NAME.jar
+          asset_name: Kulibin-$TAG_NAME.jar
           asset_content_type: application/java-archive
