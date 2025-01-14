@@ -36,28 +36,14 @@ jobs:
       - name: Check folders
         run: |
           echo "Current directory:"
-          ls
-          echo "Checking build directory..."
-          if [ -d "build" ]; then
-            cd build
-            ls
-            echo "Checking distributions directory..."
-            if [ -d "distributions" ]; then
-              cd distributions
-              ls
-            else
-              echo "Directory 'distributions' does not exist."
-            fi
-          else
-            echo "Directory 'build' does not exist."
-          fi
+          pwd
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
           name: kulibin-jar
           if-no-files-found: error
-          path: /home/runner/work/Kulibin/Kulibin/build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
+          path: ./build/distributions/Kulibin-${{ env.TAG_NAME }}.jar
 
   release:
     runs-on: ubuntu-latest
