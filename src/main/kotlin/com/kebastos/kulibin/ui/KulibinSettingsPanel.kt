@@ -6,6 +6,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.panel
 import com.kebastos.kulibin.enums.ConsoleViewLevel
+import com.kebastos.kulibin.enums.EnvironmentVariableType
 import com.kebastos.kulibin.enums.Terminal
 import com.kebastos.kulibin.enums.getAvailableTerminals
 import com.kebastos.kulibin.settings.ApplicationSettingsState
@@ -23,6 +24,11 @@ class KulibinSettingsPanel(settings: ApplicationSettingsState) {
     private val consoleViewLevel =
         ComboBox(ConsoleViewLevel.entries.toTypedArray()).apply {
             selectedItem = state.consoleViewLevel
+        }
+
+    private val environmentVariableTypeComboBox =
+        ComboBox(EnvironmentVariableType.entries.toTypedArray()).apply {
+            selectedItem = state.environmentVariableType
         }
 
     val panel: DialogPanel =
@@ -47,6 +53,11 @@ class KulibinSettingsPanel(settings: ApplicationSettingsState) {
                     .resizableColumn()
                     .align(Align.FILL)
             }
+            row("Environment Variable Type:") {
+                cell(environmentVariableTypeComboBox)
+                    .resizableColumn()
+                    .align(Align.FILL)
+            }
         }
 
     init {
@@ -58,6 +69,7 @@ class KulibinSettingsPanel(settings: ApplicationSettingsState) {
         startSearchMaskField.text = state.startSearchMask
         terminalTypeComboBox.selectedItem = state.terminalType
         consoleViewLevel.selectedItem = state.consoleViewLevel
+        environmentVariableTypeComboBox.selectedItem = state.environmentVariableType
     }
 
     fun applyChanges() {
@@ -65,12 +77,14 @@ class KulibinSettingsPanel(settings: ApplicationSettingsState) {
         state.startSearchMask = startSearchMaskField.text
         state.terminalType = terminalTypeComboBox.selectedItem as Terminal
         state.consoleViewLevel = consoleViewLevel.selectedItem as ConsoleViewLevel
+        state.environmentVariableType = environmentVariableTypeComboBox.selectedItem as EnvironmentVariableType
     }
 
     fun isModified(): Boolean {
         return buildSearchMaskField.text != state.buildSearchMask ||
             startSearchMaskField.text != state.startSearchMask ||
             terminalTypeComboBox.selectedItem != state.terminalType ||
-            consoleViewLevel.selectedItem != state.consoleViewLevel
+            consoleViewLevel.selectedItem != state.consoleViewLevel ||
+            environmentVariableTypeComboBox.selectedItem != state.environmentVariableType
     }
 }

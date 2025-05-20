@@ -22,6 +22,8 @@ class ProjectSettingsLoaderService : ProjectActivity {
         var buildScripts: List<ScriptInfoModel> = listOf()
         var runScripts: List<ScriptInfoModel> = listOf()
 
+        val previousSettings = projectState.state
+
         if (settingsState.buildSearchMask.isNotEmpty()) {
             buildScripts = findFilesByMask(rootPath, settingsState.buildSearchMask)
         } else {
@@ -34,10 +36,20 @@ class ProjectSettingsLoaderService : ProjectActivity {
             logger.warn("Файлы запуска сборки не найдены.")
         }
 
-        val firstBuildScript = buildScripts.getOrNull(0) ?: ScriptInfoModel()
-        val firstRunScript = runScripts.getOrNull(0) ?: ScriptInfoModel()
+        val selectedBuildScript = findScriptInList(previousSettings.buildScript, buildScripts) ?: buildScripts.getOrNull(0) ?: ScriptInfoModel()
+        val selectedRunScript = findScriptInList(previousSettings.runScript, runScripts) ?: runScripts.getOrNull(0) ?: ScriptInfoModel()
 
-        projectState.loadState(ProjectInfoModel(buildScripts, runScripts, firstBuildScript, firstRunScript))
+        projectState.loadState(ProjectInfoModel(buildScripts, runScripts, selectedBuildScript, selectedRunScript))
+    }
+
+    private fun findScriptInList(previousScript: ScriptInfoModel, newScripts: List<ScriptInfoModel>): ScriptInfoModel? {
+        if (previousScript.isDefaultScript()) {
+            return null
+        }
+        
+        return newScripts.find { newScript ->
+            newScript.path == previousScript.path && newScript.name == previousScript.name
+        }
     }
 
     private fun findFilesByMask(
